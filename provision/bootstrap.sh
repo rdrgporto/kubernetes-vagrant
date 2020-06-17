@@ -83,7 +83,7 @@ chown -R $VM_USER:$VM_USER /home/$VM_USER/.kube &> /dev/null
 export KUBECONFIG=/home/$VM_USER/.kube/config
 
 # Allow everything
-kubectl taint nodes --all node-role.kubernetes.io/master &> /dev/null
+kubectl taint nodes --all node-role.kubernetes.io/master- &> /dev/null
 kubectl create clusterrolebinding permissive-binding \
  --clusterrole=cluster-admin \
  --user=admin \
