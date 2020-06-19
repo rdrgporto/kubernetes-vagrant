@@ -93,6 +93,9 @@ kubectl create clusterrolebinding permissive-binding \
 # Deploy Weave (network)
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')" &> /dev/null
 
+# Enable kubectl completion bash
+echo "source <(kubectl completion bash)" >> /home/$VM_USER/.bashrc
+
 # Clean unneeded packages
 echo "[$(DATE)] [Info] [System] Cleaning unneeded packages..."
 apt -y autoremove &> /dev/null
