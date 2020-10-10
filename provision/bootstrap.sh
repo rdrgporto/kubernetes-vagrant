@@ -9,7 +9,7 @@ DATE() {
 IP=`ip -o addr show up primary scope global | while read -r num dev fam addr rest; do echo [$(DATE)] [Info] [System] ${addr%/*}; done`
 VM_USER=vagrant
 DOCKER_VERSION=19.03.8
-KUBERNETES_VERSION=1.17.5
+KUBERNETES_VERSION=1.18.9
 
 # Non-Interactive Installation
 export DEBIAN_FRONTEND=noninteractive
