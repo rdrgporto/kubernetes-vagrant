@@ -8,8 +8,8 @@ DATE() {
 # Variables
 IP=`ip -o addr show up primary scope global | while read -r num dev fam addr rest; do echo [$(DATE)] [Info] [System] ${addr%/*}; done`
 VM_USER=vagrant
-DOCKER_VERSION=20.10.7
-KUBERNETES_VERSION=1.20.8
+KUBERNETES_VERSION=1.21.2
+CONTAINERD_VERSION=1.4.6-1
 
 # Non-Interactive Installation
 export DEBIAN_FRONTEND=noninteractive
@@ -29,7 +29,7 @@ apt -y install \
     software-properties-common \
     bash-completion &> /dev/null
 
-echo "[$(DATE)] [Info] [Docker] Installing Docker..."
+echo "[$(DATE)] [Info] [Containerd] Installing Containerd..."
 
 # Add Docker's official GPG key
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - &> /dev/null
@@ -41,15 +41,34 @@ add-apt-repository \
    $(lsb_release -cs) \
    stable" &> /dev/null
 
-# Install Docker
+# Install Containerd
 apt -y update &> /dev/null
-apt -y install docker-ce=5:$DOCKER_VERSION~3-0~ubuntu-bionic docker-ce-cli=5:$DOCKER_VERSION~3-0~ubuntu-bionic containerd.io=1.4.3-1 &> /dev/null
+apt -y install containerd.io=$CONTAINERD_VERSION &> /dev/null
 
-# To run Docker without sudo
-usermod -aG docker $VM_USER &> /dev/null
+# Configure Containerd
+cat <<EOF >/etc/modules-load.d/containerd.conf
+overlay
+br_netfilter
+EOF
 
-# Enable service
-systemctl enable docker &> /dev/null
+modprobe overlay
+modprobe br_netfilter
+
+cat <<EOF >/etc/sysctl.d/99-kubernetes-cri.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.ipv4.ip_forward                 = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+
+sysctl --system &> /dev/null
+
+sudo mkdir -p /etc/containerd
+containerd config default > /etc/containerd/config.toml
+sed -i 's/runc.options\]/runc.options]\n            SystemdCgroup = true/g' /etc/containerd/config.toml
+
+# Enable and restart service
+systemctl enable containerd &> /dev/null
+systemctl restart containerd &> /dev/null
 
 echo "[$(DATE)] [Info] [Kubernetes] Installing Kubernetes..."
 
@@ -69,7 +88,7 @@ apt -y install kubeadm=$KUBERNETES_VERSION-00 kubelet=$KUBERNETES_VERSION-00 kub
 swapoff -a &> /dev/null
  
 # Keep swap off after reboot
-sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab &> /dev/null
+sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab &> /dev/null
 
 # Initialize Kubeadm
 kubeadm init --kubernetes-version=v$KUBERNETES_VERSION &> /dev/null
