@@ -8,16 +8,11 @@ DATE() {
 # Variables
 IP=`ip -o addr show up primary scope global | while read -r num dev fam addr rest; do echo [$(DATE)] [Info] [System] ${addr%/*}; done`
 VM_USER=vagrant
-KUBERNETES_VERSION=1.21.8
-CONTAINERD_VERSION=1.4.12-1
+KUBERNETES_VERSION=1.22.10
+CONTAINERD_VERSION=1.6.6-1
 
 # Non-Interactive Installation
 export DEBIAN_FRONTEND=noninteractive
-
-# Update & Upgrade System
-echo "[$(DATE)] [Info] [System] Updating & Upgrading System..."
-apt -y update &> /dev/null
-apt -y upgrade &> /dev/null
 
 # Install packages to allow apt to use a repository over HTTPS
 echo "[$(DATE)] [Info] [System] Installing tools..."
@@ -62,9 +57,7 @@ EOF
 
 sysctl --system &> /dev/null
 
-sudo mkdir -p /etc/containerd
-containerd config default > /etc/containerd/config.toml
-sed -i 's/runc.options\]/runc.options]\n            SystemdCgroup = true/g' /etc/containerd/config.toml
+sed -i 's/cri//g' /etc/containerd/config.toml
 
 # Enable and restart service
 systemctl enable containerd &> /dev/null
