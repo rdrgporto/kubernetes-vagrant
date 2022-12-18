@@ -8,8 +8,11 @@ DATE() {
 # Variables
 IP=`ip -o addr show up primary scope global | while read -r num dev fam addr rest; do echo [$(DATE)] [Info] [System] ${addr%/*}; done`
 VM_USER=vagrant
-KUBERNETES_VERSION=1.22.10
-CONTAINERD_VERSION=1.6.6-1
+KUBERNETES_VERSION=1.23.14
+KUBERNETES_POD_CIDR=10.244.0.0/16
+CONTAINERD_VERSION=1.6.12-1
+CALICO_VERSION=3.24.5
+PROVISION_FOLDER="/tmp"
 
 # Non-Interactive Installation
 export DEBIAN_FRONTEND=noninteractive
@@ -84,7 +87,7 @@ swapoff -a &> /dev/null
 sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab &> /dev/null
 
 # Initialize Kubeadm
-kubeadm init --kubernetes-version=v$KUBERNETES_VERSION &> /dev/null
+kubeadm init --kubernetes-version=v$KUBERNETES_VERSION --pod-network-cidr=$KUBERNETES_POD_CIDR &> /dev/null
 
 # Copy admin.conf in order to comunicate to Kubernetes API
 mkdir -p /home/$VM_USER/.kube &> /dev/null
@@ -102,8 +105,9 @@ kubectl create clusterrolebinding permissive-binding \
  --user=kubelet \
  --group=system:serviceaccounts &> /dev/null
 
-# Deploy Weave (network)
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')" &> /dev/null
+# Deploy Calico (network)
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v$CALICO_VERSION/manifests/tigera-operator.yaml &> /dev/null
+kubectl create -f $PROVISION_FOLDER/calico/custom-resources.yaml &> /dev/null
 
 # Enable kubectl completion bash
 echo "source <(kubectl completion bash)" >> /home/$VM_USER/.bashrc

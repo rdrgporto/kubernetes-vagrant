@@ -9,7 +9,8 @@ Vagrant.configure("2") do |config|
     config.vm.network "public_network"
 
     # Configure provisioning
-    config.vm.provision "shell", path: "./provision/bootstrap.sh"
+    config.vm.provision "file", source: "provision", destination: "/tmp"
+    config.vm.provision "shell", path: "bootstrap.sh"
 
     # Configure Virtualbox
     config.vm.provider "virtualbox" do |vb, override|
