@@ -1,0 +1,21 @@
+---
+- name: Add an apt signing key to a specific keyring file
+  ansible.builtin.apt_key:
+    url: https://dl.k8s.io/apt/doc/apt-key.gpg
+
+- name: Add repository into sources list
+  ansible.builtin.apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+
+- name: Install kubeadm, kubelet and kubectl
+  ansible.builtin.apt:
+    name: "{{ item }}"
+  with_items:
+    - "kubelet={{ kubernetes_version }}-00"
+    - "kubectl={{ kubernetes_version }}-00"
+    - "kubeadm={{ kubernetes_version }}-00" 
+
+- name: Remove repository from sources list
+  ansible.builtin.apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: absent

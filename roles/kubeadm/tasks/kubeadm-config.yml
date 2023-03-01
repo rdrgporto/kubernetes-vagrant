@@ -1,0 +1,50 @@
+---
+- name: Get user info in order to configure kubectl
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ kubectl_user }}"
+
+- name: Get user home & group based on get user info
+  ansible.builtin.set_fact:
+    kubectl_gid: "{{ getent_passwd[kubectl_user][2] }}"
+    kubectl_home: "{{ getent_passwd[kubectl_user][4] }}"
+
+- name: Create .kube directory
+  ansible.builtin.file:
+    path: "{{ kubectl_home }}/.kube"
+    owner: "{{ kubectl_user }}"
+    group: "{{ kubectl_gid }}"
+    mode: '0755'
+    state: directory
+
+- name: Copy admin.conf to .kube
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ kubectl_home }}/.kube/config"
+    owner: "{{ kubectl_user }}"
+    group: "{{ kubectl_gid }}"
+    remote_src: true
+    mode: '0600'
+
+- name: Configure kubectl autocompletion bash
+  ansible.builtin.lineinfile:
+    path: "{{ kubectl_home }}/.bashrc"
+    line: source <(kubectl completion bash)
+
+- name: Allow permissive RBAC rules
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - create
+      - clusterrolebinding
+      - permissive-binding
+      - --clusterrole=cluster-admin
+      - --user=admin
+      - --user=kubelet
+      - --group=system:serviceaccounts
+    creates: /var/lib/kubelet/ansible-idempotency
+
+- name: Taint controller node
+  ansible.builtin.command: kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+  args:
+    creates: /var/lib/kubelet/ansible-idempotency

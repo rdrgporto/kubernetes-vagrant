@@ -1,0 +1,12 @@
+---
+# tasks file for kubeadm
+- name: Include tasks of kubeadm-install
+  ansible.builtin.include_tasks: kubeadm-install.yml
+- name: Include tasks of kubeadm-init
+  ansible.builtin.include_tasks: kubeadm-init.yml
+- name: Include tasks of kubeadm-config
+  ansible.builtin.include_tasks: kubeadm-config.yml
+- name: Include tasks of kubeadm-addons
+  ansible.builtin.include_tasks: kubeadm-addons.yml
+- name: Include tasks of kubeadm-idempotency
+  ansible.builtin.include_tasks: kubeadm-idempotency.yml

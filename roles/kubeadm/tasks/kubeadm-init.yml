@@ -1,0 +1,11 @@
+---
+- name: Kubeadm init with pre-generated token
+  ansible.builtin.command:
+    argv:
+      - kubeadm
+      - init
+      - "--kubernetes-version=v{{ kubernetes_version }}"
+      - "--service-cidr={{ service_cidr }}"
+      - "--pod-network-cidr={{ pod_network_cidr }}"
+      - "--token={{ kubeadm_token }}"
+    creates: /var/lib/kubelet/ansible-idempotency
