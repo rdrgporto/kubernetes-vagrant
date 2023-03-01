@@ -1,0 +1,6 @@
+---
+# handlers file for containerd
+- name: Restart containerd
+  ansible.builtin.service:
+    name: containerd
+    state: restarted

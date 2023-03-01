@@ -1,0 +1,3 @@
+---
+# defaults file for containerd
+containerd_version: 1.6.18-1

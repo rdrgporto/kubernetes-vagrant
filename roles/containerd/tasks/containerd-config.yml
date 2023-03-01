@@ -1,0 +1,51 @@
+---
+- name: Configure modules
+  ansible.builtin.lineinfile:
+    path: /etc/modules-load.d/containerd.conf
+    line: "{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+    create: yes
+  with_items:
+    - overlay
+    - br_netfilter
+  notify:
+    - Restart containerd
+
+- name: Launch modprobe
+  ansible.builtin.command: "modprobe {{ item }}"
+  with_items:
+    - overlay
+    - br_netfilter
+
+- name: Configure sysctl
+  ansible.builtin.lineinfile:
+    path: /etc/sysctl.d/99-kubernetes-cri.conf
+    line: "{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+    create: yes
+  with_items:
+    - net.bridge.bridge-nf-call-iptables  = 1
+    - net.ipv4.ip_forward                 = 1
+    - net.bridge.bridge-nf-call-ip6tables = 1
+  notify:
+    - Restart containerd
+
+- name: Launch sysctl
+  ansible.builtin.command: sysctl --system
+
+- name: Copy containerd configuration
+  ansible.builtin.copy:
+    src: config.toml
+    dest: /etc/containerd/config.toml
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Restart containerd
+
+- name: Flush handlers
+  meta: flush_handlers
