@@ -1,0 +1,16 @@
+---
+- name: Install Containerd
+  hosts: staging
+  become: true
+  become_user: root
+  roles:
+    - containerd
+
+- name: Install Kubernetes
+  hosts: staging
+  become: true
+  become_user: root
+  environment:
+   KUBECONFIG: /etc/kubernetes/admin.conf
+  roles:
+    - kubeadm
