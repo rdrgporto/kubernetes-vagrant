@@ -1,0 +1,14 @@
+---
+- name: Get user info in order to configure helm
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ helm_user }}"
+
+- name: Get user home based on get user info
+  ansible.builtin.set_fact:
+    helm_home: "{{ getent_passwd[helm_user][4] }}"
+
+- name: Configure helm autocompletion bash
+  ansible.builtin.lineinfile:
+    path: "{{ helm_home }}/.bashrc"
+    line: source <(helm completion bash)

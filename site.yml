@@ -14,3 +14,10 @@
    KUBECONFIG: /etc/kubernetes/admin.conf
   roles:
     - kubeadm
+
+- name: Install Helm
+  hosts: staging
+  become: true
+  become_user: root
+  roles:
+    - helm
