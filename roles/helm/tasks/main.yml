@@ -1,6 +1,9 @@
 ---
 # tasks file for helm
 - name: Include tasks of helm-install
-  ansible.builtin.include_tasks: helm-install.yml
+  ansible.builtin.include_tasks:
+    file: helm-install.yml
+
 - name: Include tasks of helm-config
-  ansible.builtin.include_tasks: helm-config.yml
+  ansible.builtin.include_tasks:
+    file: helm-config.yml

@@ -1,6 +1,9 @@
 ---
 # tasks file for containerd
 - name: Include tasks of containerd-install
-  ansible.builtin.include_tasks: containerd-install.yml
+  ansible.builtin.include_tasks:
+    file: containerd-install.yml
+
 - name: Include tasks of containerd-config
-  ansible.builtin.include_tasks: containerd-config.yml
+  ansible.builtin.include_tasks:
+   file: containerd-config.yml
