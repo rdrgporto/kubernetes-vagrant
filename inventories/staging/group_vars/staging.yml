@@ -1,6 +1,6 @@
 ---
 # Containerd
-containerd_version: 1.6.18-1
+containerd_version: 1.6.19-1
 
 # Kubernetes
 kubernetes_version: 1.25.8
