@@ -1,6 +1,6 @@
 ---
 # defaults file for kubeadm
-kubernetes_version: 1.26.5
+kubernetes_version: 1.26.7
 service_cidr: 10.96.0.0/26
 pod_network_cidr: 10.244.0.0/16
 kubeadm_token: hxgwns.texeocs6rl41tbvj
