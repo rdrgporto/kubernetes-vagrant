@@ -4,7 +4,7 @@
     argv:
       - kubeadm
       - init
-      - "--kubernetes-version=v{{ kubernetes_version }}"
+      - "--kubernetes-version=v{{ kubeadm_tool_version }}"
       - "--service-cidr={{ service_cidr }}"
       - "--pod-network-cidr={{ pod_network_cidr }}"
       - "--token={{ kubeadm_token }}"

@@ -1,21 +1,48 @@
 ---
+- name: Install packages to allow apt to use a repository over HTTPS
+  ansible.builtin.apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+    state: present
+
+- name: Create a directory /etc/apt/keyrings
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
+
 - name: Add an apt signing key to a specific keyring file
   ansible.builtin.apt_key:
-    url: https://dl.k8s.io/apt/doc/apt-key.gpg
+    url: "https://pkgs.k8s.io/core:/stable:/v{{ kubeadm_repo_version }}/deb/Release.key"
+    keyring: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 - name: Add repository into sources list
   ansible.builtin.apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ kubeadm_repo_version }}/deb/ /"
+    filename: kubernetes.list
+    update_cache: true
+    state: present
 
-- name: Install kubeadm, kubelet and kubectl
+- name: Install Kubelet, Kubectl and Kubeadm
   ansible.builtin.apt:
     name: "{{ item }}"
+    state: present
   with_items:
-    - "kubelet={{ kubernetes_version }}-00"
-    - "kubectl={{ kubernetes_version }}-00"
-    - "kubeadm={{ kubernetes_version }}-00" 
+    - "kubelet={{ kubeadm_tool_version }}-1.1"
+    - "kubectl={{ kubeadm_tool_version }}-1.1"
+    - "kubeadm={{ kubeadm_tool_version }}-1.1"
 
 - name: Remove repository from sources list
   ansible.builtin.apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ kubeadm_repo_version }}/deb/ /"
+    update_cache: true
     state: absent
+
+- name: Enable Kubelet
+  ansible.builtin.service:
+    name: kubelet
+    enabled: true
