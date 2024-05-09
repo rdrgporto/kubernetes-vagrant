@@ -10,5 +10,5 @@ kubeadm_token: hxgwns.texeocs6rl41tbvj
 kubectl_user: vagrant
 
 # Helm
-helm_version: 3.11.3-1
+helm_version: 3.14.2-1
 helm_user: vagrant
