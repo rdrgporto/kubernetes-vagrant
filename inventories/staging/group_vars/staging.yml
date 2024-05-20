@@ -1,6 +1,6 @@
 ---
 # Containerd
-containerd_version: 1.6.20-1
+containerd_version: 1.6.31-1
 
 # Kubernetes
 kubeadm_tool_version: 1.29.4
