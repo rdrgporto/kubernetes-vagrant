@@ -1,0 +1,64 @@
+---
+- name: Install packages to allow apt to use a repository over HTTPS
+  ansible.builtin.apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+    state: present
+
+- name: Create a directory /etc/apt/keyrings
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
+
+- name: Add an apt signing key to a specific keyring file (kubectl)
+  ansible.builtin.apt_key:
+    url: "https://pkgs.k8s.io/core:/stable:/v{{ kube_cli_kubernetes_repo_version }}/deb/Release.key"
+    keyring: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+- name: Add repository into sources list (kubectl)
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ kube_cli_kubernetes_repo_version }}/deb/ /"
+    filename: kubernetes.list
+    update_cache: true
+    state: present
+
+- name: Install Kubectl
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "kubectl={{ kube_cli_kubectl_version }}-1.1"
+
+- name: Remove repository from sources list (kubectl)
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v{{ kube_cli_kubernetes_repo_version }}/deb/ /"
+    update_cache: true
+    state: absent
+
+- name: Add an apt signing key to a specific keyring file (helm)
+  ansible.builtin.apt_key:
+    url: https://baltocdn.com/helm/signing.asc
+    keyring: /usr/share/keyrings/helm.gpg
+
+- name: Add repository into sources list (helm)
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64 signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main
+    filename: helm.list
+    update_cache: true
+    state: present
+
+- name: Install Helm
+  ansible.builtin.apt:
+    name: "helm={{ kube_cli_helm_version }}"
+    state: present
+
+- name: Remove repository from sources list (helm)
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64 signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main
+    update_cache: true
+    state: absent

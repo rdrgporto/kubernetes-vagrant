@@ -1,0 +1,6 @@
+---
+# defaults file for kube_cli
+kube_cli_kubernetes_repo_version: "{{ kubeadm_repo_version }}"
+kube_cli_kubectl_version: "{{ kubeadm_tool_version }}"
+kube_cli_helm_version: 3.16.1-1
+kube_cli_user: vagrant

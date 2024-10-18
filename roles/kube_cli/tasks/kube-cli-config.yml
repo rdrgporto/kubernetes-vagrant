@@ -1,0 +1,37 @@
+---
+- name: Get user info in order to configure cli tools
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ kube_cli_user }}"
+
+- name: Get user home & group based on get user info
+  ansible.builtin.set_fact:
+    cli_gid: "{{ getent_passwd[kube_cli_user][2] }}"
+    cli_home: "{{ getent_passwd[kube_cli_user][4] }}"
+
+- name: Create .kube directory
+  ansible.builtin.file:
+    path: "{{ cli_home }}/.kube"
+    owner: "{{ kube_cli_user }}"
+    group: "{{ cli_gid }}"
+    mode: '0755'
+    state: directory
+
+- name: Copy admin.conf to .kube
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ cli_home }}/.kube/config"
+    owner: "{{ kube_cli_user }}"
+    group: "{{ cli_gid }}"
+    remote_src: true
+    mode: '0600'
+
+- name: Configure autocompletion bash (kubectl)
+  ansible.builtin.lineinfile:
+    path: "{{ cli_home }}/.bashrc"
+    line: source <(kubectl completion bash)
+
+- name: Configure autocompletion bash (helm)
+  ansible.builtin.lineinfile:
+    path: "{{ cli_home }}/.bashrc"
+    line: source <(helm completion bash)

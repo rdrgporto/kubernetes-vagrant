@@ -1,0 +1,9 @@
+---
+# tasks file for kube_cli
+- name: Include tasks of kube-cli-install
+  ansible.builtin.include_tasks:
+    file: kube-cli-install.yml
+
+- name: Include tasks of kube-cli-config
+  ansible.builtin.include_tasks:
+    file: kube-cli-config.yml
