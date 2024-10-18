@@ -1,0 +1,7 @@
+---
+# defaults file for cilium
+cilium_version: 1.16.3
+cilium_operator_replicas: 1
+cilium_pod_cidr: 10.0.0.0/8
+cilium_python_pyaml_module: "{{ python_pyaml_module }}"
+cilium_kube_cli_user: "{{ kube_cli_user }}"

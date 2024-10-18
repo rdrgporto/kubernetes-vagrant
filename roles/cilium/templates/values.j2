@@ -1,0 +1,6 @@
+operator:
+  replicas: {{ cilium_operator_replicas }}
+
+kubeProxyReplacement: true
+k8sServiceHost: {{ ansible_default_ipv4.address }}
+k8sServicePort: 6443

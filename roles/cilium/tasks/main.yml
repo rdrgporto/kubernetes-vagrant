@@ -1,0 +1,50 @@
+---
+# tasks file for cilium
+- name: Install pip3
+  ansible.builtin.apt:
+    pkg:
+      - python3-pip
+    state: present
+
+- name: Install PyYAML module
+  ansible.builtin.pip:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "PyYAML>={{ cilium_python_pyaml_module }}"
+
+- name: Add Cilium chart repo
+  become: true
+  become_user: "{{ cilium_kube_cli_user }}"
+  kubernetes.core.helm_repository:
+    name: cilium
+    repo_url: https://helm.cilium.io
+
+- name: Generate values.yml from template
+  ansible.builtin.template:
+    src: "values.j2"
+    dest: "/tmp/values.yml"
+    mode: '0644'
+
+- name: Deploy Cilium
+  become: true
+  become_user: "{{ cilium_kube_cli_user }}"
+  kubernetes.core.helm:
+    name: cilium
+    chart_ref: cilium/cilium
+    chart_version: "{{ cilium_version }}"
+    release_namespace: kube-system
+    update_repo_cache: true
+    values_files:
+      - /tmp/values.yml
+
+- name: Wait for all Cilium pods to be ready
+  become: true
+  become_user: "{{ cilium_kube_cli_user }}"
+  ansible.builtin.shell:
+    cmd: kubectl -n kube-system get pods -l k8s-app=cilium -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}'
+  register: result
+  until: result.stdout.find("False") == -1
+  retries: 60
+  delay: 5
+  changed_when: false
