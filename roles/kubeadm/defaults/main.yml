@@ -2,7 +2,6 @@
 # defaults file for kubeadm
 kubeadm_repo_version: 1.29
 kubeadm_tool_version: 1.29.4
-service_cidr: 10.96.0.0/26
-pod_network_cidr: 10.244.0.0/16
+kubeadm_service_cidr: 10.96.0.0/26
+kubeadm_pod_network_cidr: 10.244.0.0/16
 kubeadm_token: hxgwns.texeocs6rl41tbvj
-kubectl_user: vagrant

@@ -5,7 +5,8 @@
       - kubeadm
       - init
       - "--kubernetes-version=v{{ kubeadm_tool_version }}"
-      - "--service-cidr={{ service_cidr }}"
-      - "--pod-network-cidr={{ pod_network_cidr }}"
+      - "--service-cidr={{ kubeadm_service_cidr }}"
+      - "--pod-network-cidr={{ kubeadm_pod_network_cidr }}"
       - "--token={{ kubeadm_token }}"
+      - "--skip-phases=addon/kube-proxy"
     creates: /var/lib/kubelet/ansible-idempotency

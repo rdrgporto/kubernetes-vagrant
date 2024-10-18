@@ -12,10 +12,6 @@
   ansible.builtin.include_tasks:
     file: kubeadm-config.yml
 
-- name: Include tasks of kubeadm-addons
-  ansible.builtin.include_tasks:
-    file: kubeadm-addons.yml
-
 - name: Include tasks of kubeadm-idempotency
   ansible.builtin.include_tasks:
     file: kubeadm-idempotency.yml
