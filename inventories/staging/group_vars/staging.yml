@@ -5,11 +5,13 @@ containerd_version: 1.6.31-1
 # Kubernetes
 kubeadm_repo_version: "1.30"
 kubeadm_tool_version: 1.30.5
-service_cidr: 10.96.0.0/26
-pod_network_cidr: 10.244.0.0/16
+kubeadm_service_cidr: 10.96.0.0/26
+kubeadm_pod_network_cidr: 10.244.0.0/16
 kubeadm_token: hxgwns.texeocs6rl41tbvj
-kubectl_user: vagrant
 
 # Helm
-helm_version: 3.16.1-1
-helm_user: vagrant
+kube_cli_helm_version: 3.16.1-1
+kube_cli_kubectl_version: 1.30.5
+kube_cli_user: vagrant
+python_kubernetes_module: 12.0.0
+python_pyaml_module: 3.11

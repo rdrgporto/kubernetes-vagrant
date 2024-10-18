@@ -15,9 +15,16 @@
   roles:
     - kubeadm
 
-- name: Install Helm
+- name: Install Helm & Kubectl
   hosts: staging
   become: true
   become_user: root
   roles:
-    - helm
+    - kube_cli
+
+- name: Install Cilium
+  hosts: staging
+  become: true
+  become_user: root
+  roles:
+    - cilium
