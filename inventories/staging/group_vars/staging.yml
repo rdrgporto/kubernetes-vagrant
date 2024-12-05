@@ -10,7 +10,7 @@ kubeadm_pod_network_cidr: 10.244.0.0/16
 kubeadm_token: hxgwns.texeocs6rl41tbvj
 
 # Helm
-kube_cli_helm_version: 3.16.1-1
+kube_cli_helm_version: 3.16.3-1
 kube_cli_kubectl_version: 1.31.3
 kube_cli_user: vagrant
 python_kubernetes_module: 12.0.0
